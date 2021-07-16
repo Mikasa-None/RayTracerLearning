@@ -9,8 +9,8 @@ void RayTracer::Draw(const Scene& scn,Canvas& cvs) const
 			vec3 color;
 			for (int k = 0; k < nsample; ++k)
 			{
-				float u = float(i+getRandom()) / float(Canvas::ScreenWidth);
-				float v = float(j + getRandom()) / float(Canvas::ScreenHeight);
+				float u = float(i+0.5+getRandom()) / float(Canvas::ScreenWidth);
+				float v = float(j +0.5+ getRandom()) / float(Canvas::ScreenHeight);
 				Ray r = camera.GetRay(u, v);
 				//color += scn.castRay(r, 0);
 				color += scn.PathTracing(r);
