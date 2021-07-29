@@ -20,25 +20,23 @@ public:
 		return albedo;
 	}
 	vec3 toWorld(const vec3 &a, const vec3 &N)const {
-		vec3 B, C;
-		if (std::fabs(N.x()) > std::fabs(N.y())) {
-			float invLen = 1.0f / std::sqrt(N.x() * N.x() + N.z() * N.z());
-			C = vec3(N.z() * invLen, 0.0f, -N.x() *invLen);
-		}
-		else {
-			float invLen = 1.0f / std::sqrt(N.y() * N.y() + N.z() * N.z());
-			C = vec3(0.0f, N.z() * invLen, -N.y() *invLen);
-		}
-		B = cross(C, N);
-		return a.x() * B + a.y() * C + a.z() * N;
+		vec3 w = unit_vector(N);
+		vec3 help = (fabs(w.x()) > 0.9) ? vec3(0, 1, 0) : vec3(1, 0, 0);
+		vec3 v = unit_vector(cross(w, help));
+		vec3 u = cross(w, v);
+		return a.x() * u + a.y() * v + a.z() * w;
 	}
 
 	virtual vec3 sample(const vec3 &wi, const vec3 &N)const {
-		// uniform sample on the hemisphere
 		float x_1 = getRandom(), x_2 = getRandom();
-		float z = std::fabs(1.0f - 2.0f * x_1);
-		float r = std::sqrt(1.0f - z * z), phi = 2 * PI * x_2;
-		vec3 localRay(r*std::cos(phi), r*std::sin(phi), z);
+		float Phi = 2 * PI * x_1;
+		float CosTheta = x_2;
+		float SinTheta = sqrt(1 - CosTheta * CosTheta);
+
+		float x = SinTheta * cos(Phi);
+		float y = SinTheta * sin(Phi);
+		float z = CosTheta;
+		vec3 localRay(x, y, z);
 		return toWorld(localRay, N);
 
 	}
